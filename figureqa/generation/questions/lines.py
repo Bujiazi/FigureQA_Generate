@@ -38,15 +38,14 @@ def _get_min_max_non(tuples):
         not_min, not_max = None, None
         indices_to_try = np.random.permutation(range(len(tuples))).tolist()
 
-        for i in range(1, len(indices_to_try)):
+        for key, value in tuples:
             if not_min and not_max:
                 break
-
-            if tuples[i][1] < sorted_tuples[-1][1]:
-                not_max = tuples[i]
-
-            if tuples[i][1] > sorted_tuples[0][1]:
-                not_min = tuples[i]
+            # import pdb; pdb.set_trace()
+            if value < sorted_tuples[-1][1]:
+                not_max = (key, value)
+            if value > sorted_tuples[0][1]:
+                not_min = (key, value)
 
         if not_min:
             q_data['not_min'] = not_min[0]

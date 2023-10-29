@@ -9,8 +9,9 @@ import yaml
 from figure_generation import generate_figures
 from json_combiner import combine_figure_data
 from source_data_generation import generate_source_data
+import chromedriver_autoinstaller
 
-
+chromedriver_autoinstaller.install()
 @click.command()
 @click.argument("generation_yaml")
 @click.option("--share-webdriver/--new-webdriver", default=True,
@@ -25,7 +26,8 @@ def main(generation_yaml, share_webdriver):
         config = yaml.load(f)
 
     # Create a single webdriver for serial generation
-    webdriver = seldriver.PhantomJS() if share_webdriver else None
+    # webdriver = seldriver.PhantomJS() if share_webdriver else None
+    webdriver = seldriver.Chrome()
 
     working_dir = os.path.normpath(config['working_directory']) if 'working_directory' in config else "working_generation"
     dest_dir = os.path.normpath(config['destination_directory']) if 'destination_directory' in config else "final_generation"

@@ -5,11 +5,12 @@ import os
 import signal
 import selenium.webdriver as seldriver
 import yaml
+import chromedriver_autoinstaller
 
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from tqdm import tqdm
 
-from bokeh.io import export_png_and_data
+from bokeh.io import export_png
 from data_utils import combine_source_and_rendered_data
 from figure import *
 from show_bounding_boxes import generate_all_images_with_bboxes_for_plot
@@ -44,7 +45,7 @@ def generate_figures (
     if supplied_webdriver:
         webdriver = supplied_webdriver
     else:
-        webdriver = seldriver.PhantomJS()
+        webdriver = seldriver.Chrome()
 
     # Read in the synthetic data
     with open(source_data_json, 'r') as f:
@@ -70,15 +71,15 @@ def generate_figures (
 
         if not fig:
             continue
-
+        import pdb; pdb.set_trace()
         html_file = os.path.join(html_dir, "%d_%s.html" % (fig_id, fig_type))
         png_file = os.path.join(png_dir, "%d_%s.png" % (fig_id, fig_type))
-
+        # import pdb; pdb.set_trace()
         # Export to HTML, PNG, and get rendered data
-        rendered_data = export_png_and_data(fig.figure, png_file, html_file, webdriver)
-
+        rendered_data = export_png(fig.figure, filename= png_file)
+        import pdb; pdb.set_trace()
         all_plot_data = combine_source_and_rendered_data(source, rendered_data)
-
+        import pdb; pdb.set_trace()
         qa_json_file = os.path.join(qa_json_dir, "%s_%s.json" % (fig_id, fig_type))
         annotations_json_file = os.path.join(annotations_json_dir, "%d_%s_annotations.json" % (fig_id, fig_type))
 
@@ -87,21 +88,22 @@ def generate_figures (
             qa['annotations'] = os.path.basename(annotations_json_file)
 
         with open(qa_json_file, 'w') as f:
+            # import pdb; pdb.set_trace()
             json.dump({
                 'qa_pairs': source['qa_pairs'], 
                 'total_distinct_questions': source_data_json['total_distinct_questions'],
                 'total_distinct_colors': source_data_json['total_distinct_colors']
             }, f)
 
-        with open(annotations_json_file, 'w') as f:
-            json.dump(all_plot_data, f)
+        # with open(annotations_json_file, 'w') as f:
+        #     json.dump(all_plot_data, f)
 
         if add_bboxes:
             all_plot_data['image_index'] = fig_id
             generate_all_images_with_bboxes_for_plot(all_plot_data, png_file, bbox_img_dir, 'red', load_image=True)
 
         # Cleanup
-        os.remove(html_file)
+        # os.remove(html_file)
 
     # Kill the newly created webdriver
     if not supplied_webdriver:

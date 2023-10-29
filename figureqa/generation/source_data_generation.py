@@ -12,7 +12,8 @@ from data_utils import combine_source_and_rendered_data, get_best_inside_legend_
 from questions.categorical import generate_bar_graph_questions, generate_pie_chart_questions
 from questions.lines import generate_line_plot_questions
 from questions.utils import balance_questions_by_qid, NUM_DISTINCT_QS
-
+import sys
+sys.path.append(r"D:\python_projects\FigureQA\config")
 from scipy.stats import norm as norm_gen
 
 
@@ -509,10 +510,9 @@ def generate_source_data (
     ):
 
     PLOT_KEY_PAIRS = [("vbar", "vbar_categorical"), ("hbar", "hbar_categorical"), ("pie", None), ("line", None), ("dot_line", None)]
-
-    if all([locals()[arg_name] == 0 for arg_name, actual_name in PLOT_KEY_PAIRS]) \
-            or any([locals()[arg_name] < 0 for arg_name, actual_name in PLOT_KEY_PAIRS]):
-        raise Exception("Invalid number of figures! Need at least one plot type specified!")
+    # import pdb; pdb.set_trace()
+    # if all([locals()[arg_name] == 0 for arg_name, actual_name in PLOT_KEY_PAIRS]) or any([locals()[arg_name] < 0 for arg_name, actual_name in PLOT_KEY_PAIRS]):
+    #     raise Exception("Invalid number of figures! Need at least one plot type specified!")
 
     global data_config
     global common_config
@@ -559,7 +559,17 @@ def generate_source_data (
     if not keep_all_questions:
         balance_questions_by_qid(generated_data)
 
+    def convert_int32_to_int(obj):
+        if isinstance(obj, np.int32):
+            return int(obj)
+        elif isinstance(obj, dict):
+            return {key: convert_int32_to_int(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_int32_to_int(item) for item in obj]
+        return obj
+    generated_data = convert_int32_to_int(generated_data)
     with open(output_file_json, 'w') as f:
+        # import pdb; pdb.set_trace()
         json.dump({
             'data': generated_data, 
             'total_distinct_questions': NUM_DISTINCT_QS,
@@ -594,7 +604,6 @@ def main (**kwargs):
     defined in DATA_CONFIG_YAML and saves the data to OUTPUT_FILE_JSON.
     """
     generate_source_data(**kwargs)
-
 
 if __name__ == "__main__":
     main()

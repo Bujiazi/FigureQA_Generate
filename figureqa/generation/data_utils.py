@@ -53,7 +53,7 @@ def _get_general_figure_data(source_data=None, rendered_data=None):
         if source_data and 'type' in source_data and source_data['type'] == 'pie':
             xs = []
             ys = []
-
+            import pdb; pdb.set_trace()
             for model_data in rendered_data.values():
                 if 'slices' not in model_data:
                     continue

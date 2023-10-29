@@ -3,7 +3,7 @@ from __future__ import division
 
 import copy
 
-from bokeh.io import export_png_and_data    # Custom function
+from bokeh.io import export_png   # Custom function
 from bokeh.models import ColumnDataSource, LabelSet, Legend
 from bokeh.models.glyphs import Line
 from bokeh.models.markers import Asterisk, Circle, Cross, Diamond, Square, Triangle, X
